@@ -7,7 +7,6 @@
 // Configs & helpers files
 #include "configHW.h"
 #include "displayLayout.h"
-#include "helpers.h"
 
 // Fonts
 #include "Fonts/FreeSansBold30pt7b.h"
@@ -15,6 +14,9 @@
 #include "Fonts/FreeSansBold36pt7b.h"
 #include "Fonts/FreeSans11pt7b.h"
 #include "Fonts/FreeSansBold9pt7b.h"
+
+// Icons
+#include "Icons/weatherIcons.h"
 
 GxIO_Class epdIO(SPI, pinCS, pinDC, pinRST);
 GxEPD_Class epdDisplay(epdIO, pinRST, pinBusy);
@@ -48,25 +50,25 @@ void printHourEPD(tm *pTimeInfo)
 
 void printDateEPD(tm *pTimeInfo)
 {
-  //TODO: If month name is short, apply an offset
-  String sDate = String(pTimeInfo->tm_mday) + 
+    //TODO: If month name is short, apply an offset
+    String sDate = String(pTimeInfo->tm_mday) + 
                 String(" ") +
                 String(monthName[pTimeInfo->tm_mon]) + 
                 String(" ") +
                 String(1900 + pTimeInfo->tm_year);
 
-  epdDisplay.setTextColor(GxEPD_WHITE);
-  epdDisplay.setFont(&FreeSans11pt7b);
-  epdDisplay.fillRect(dateXPos, dateYPos, dateBoxWidth, dateBoxHeight, GxEPD_BLACK);
+    epdDisplay.setTextColor(GxEPD_WHITE);
+    epdDisplay.setFont(&FreeSans11pt7b);
+    epdDisplay.fillRect(dateXPos, dateYPos, dateBoxWidth, dateBoxHeight, GxEPD_BLACK);
 
-  //Apply offset if number has only one digit
-  (pTimeInfo->tm_mday < 9 ) ?
-  epdDisplay.setCursor(dateXPos + dateXOffset , dateYPos + dateYOffset) :
-  epdDisplay.setCursor(dateXPos, dateYPos + dateYOffset);
+    //Apply offset if number has only one digit
+    (pTimeInfo->tm_mday < 9 ) ?
+    epdDisplay.setCursor(dateXPos + dateXOffset , dateYPos + dateYOffset) :
+    epdDisplay.setCursor(dateXPos, dateYPos + dateYOffset);
 
-  epdDisplay.print(sDate);
+    epdDisplay.print(sDate);
 
-  epdDisplay.updateWindow(dateXPos, dateYPos, dateBoxWidth, dateBoxHeight, true);
+    epdDisplay.updateWindow(dateXPos, dateYPos, dateBoxWidth, dateBoxHeight, true);
 
 }
 
@@ -83,4 +85,64 @@ void loadingScreenEPD(bool configServer, String IP)
     epdDisplay.print(IP);
 
     epdDisplay.updateWindow(hourXPos, hourYPos, hourBoxWidth, hourBoxHeight, true);
+}
+
+void printWeatherInfoEPD(weatherStruct *WeatherData)
+{
+    // Create weather info
+    String sTemp = String((int)round(WeatherData->fTemperature)) + String("C");
+    String sHum = String("HR: ") + String((int)round(WeatherData->uiRelativeHumidity)) + String(" %");
+    String sWind = String((uint16_t)WeatherData->fWindSpeed) + String(" Km/H ") + String(WeatherData->pcWindDirection);
+
+    //Print weather icon
+    unsigned char iconBuffer[iconSize] = {0};
+    getWeatherIcon(iconBuffer, WeatherData->weatherIcon);
+    epdDisplay.drawBitmap(iconBuffer, weatherIconXOffset, weatherIconYOffset, 42,42, GxEPD_WHITE);
+
+    // Temperature
+    epdDisplay.setCursor(weatherTempXOffset, weatherTempYOffset);
+    epdDisplay.setTextColor(GxEPD_BLACK);
+    //TODO: Change font size to smaller one
+    epdDisplay.setFont(&FreeSansBold20pt7b);
+    epdDisplay.print(sTemp);
+
+    epdDisplay.drawFastHLine(weatherXPos,weatherLineYOffset,120,GxEPD_BLACK);
+
+    //Extra information -> Humidity and wind info
+    epdDisplay.setCursor(weatherHumidityXOffset, weatherHumidityYOffset);
+    epdDisplay.setFont(&FreeSansBold9pt7b);
+    epdDisplay.print(sHum);
+    epdDisplay.setCursor(weatherWindXOffset, weatherWindYOffset);
+    epdDisplay.print(sWind);
+
+    //TODO: Fix this not hardcode it
+    epdDisplay.updateWindow(weatherXPos, weatherXPos, 150, 150, true);
+}
+
+void getWeatherIcon(unsigned char *ucBuffer, uint8_t weatherCode)
+{
+    // This array assign an icon from our library to the Accuweather API icon code
+    // Due to the API has 44 different icons, we reuse some icons images to reduce 
+    // memory ussage.
+    // https://developer.accuweather.com/weather-icons
+    uint8_t iconPos[44] = {0, // Number 0 not use
+                        sunIcon, sunIcon, sunCloudIcon, sunIcon, // 1 - 4
+                        sunFogIcon, sunCloudIcon, cloudyIcon, cloudyIcon, // 5 - 8
+                        0, 0, // 9, 10 not use on AW API
+                        fogIcon, //11
+                        rainIcon, rainSunIcon, rainSunIcon, rainStormIcon, // 12 - 15
+                        rainStormSunIcon, rainStormSunIcon, rainStormIcon, // 16 - 18
+                        snowIcon, snowIcon, snowIcon,  snowIcon, // 19 - 23
+                        snowIcon, snowIcon, snowIcon, // 24 - 25
+                        0, 0, 
+                        rainIcon, // 29
+                        sunIcon, sunIcon, windyIcon, moonIcon, //30 - 33
+                        moonIcon, moonIcon, moonCloudIcon, moonCloudIcon, moonCloudIcon, //34 - 38
+                        rainIcon, rainIcon, rainStormIcon, rainStormIcon, //39 - 42
+                        snowIcon, snowIcon}; // 43 - 44
+
+    //All weather icons are on the same array, so we need to calculate the offset of each icon.
+    uint16_t offset = iconSize * iconPos[weatherCode];
+
+    memcpy(ucBuffer, &weatherIcons[offset], iconSize);
 }
