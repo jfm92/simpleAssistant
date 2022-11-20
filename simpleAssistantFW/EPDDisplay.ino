@@ -48,3 +48,18 @@ void epdPrintDate(tm *pTimeInfo)
   epdDisplay.updateWindow(dateXPos, dateYPos, dateBoxWidth, dateBoxHeight, true);
 
 }
+
+void loadingScreenEPD(bool configServer, String IP)
+{
+    epdDisplay.fillScreen(GxEPD_WHITE);
+    epdDisplay.update();
+
+    epdDisplay.setTextColor(GxEPD_BLACK);
+    epdDisplay.setFont(&FreeSans11pt7b);
+    epdDisplay.fillRect(hourXPos, hourYPos, hourBoxWidth, hourBoxHeight, GxEPD_WHITE);
+    epdDisplay.setCursor(hourXPos, hourYPos + hourYOffset);
+
+    epdDisplay.print(IP);
+
+    epdDisplay.updateWindow(hourXPos, hourYPos, hourBoxWidth, hourBoxHeight, true);
+}
