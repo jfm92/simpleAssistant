@@ -24,3 +24,27 @@ void initEPD()
     epdDisplay.init();
     epdDisplay.setRotation(displayRotation);
 }
+
+void epdPrintDate(tm *pTimeInfo)
+{
+  //TODO: If month name is short, apply an offset
+  String sDate = String(pTimeInfo->tm_mday) + 
+                String(" ") +
+                String(monthName[pTimeInfo->tm_mon]) + 
+                String(" ") +
+                String(1900 + pTimeInfo->tm_year);
+
+  epdDisplay.setTextColor(GxEPD_WHITE);
+  epdDisplay.setFont(&FreeSans11pt7b);
+  epdDisplay.fillRect(dateXPos, dateYPos, dateBoxWidth, dateBoxHeight, GxEPD_BLACK);
+
+  //Apply offset if number has only one digit
+  (pTimeInfo->tm_mday < 9 ) ?
+  epdDisplay.setCursor(dateXPos + dateXOffset , dateYPos + dateYOffset) :
+  epdDisplay.setCursor(dateXPos, dateYPos + dateYOffset);
+
+  epdDisplay.print(sDate);
+
+  epdDisplay.updateWindow(dateXPos, dateYPos, dateBoxWidth, dateBoxHeight, true);
+
+}
