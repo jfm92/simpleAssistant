@@ -25,6 +25,27 @@ void initEPD()
     epdDisplay.setRotation(displayRotation);
 }
 
+void epdPrintHour(tm *pTimeInfo)
+{
+  // Give format to hour
+  String sHour = (pTimeInfo->tm_hour < 10) ?
+                  (String("0") + String(pTimeInfo->tm_hour)) :
+                  String(pTimeInfo->tm_hour);
+  sHour += String(":");
+  sHour += (pTimeInfo->tm_min < 10) ? 
+            (String("0") + String(pTimeInfo->tm_min)) :
+            String(pTimeInfo->tm_min);
+
+  epdDisplay.setTextColor(GxEPD_BLACK);
+  epdDisplay.setFont(&FreeSansBold36pt7b);
+  epdDisplay.fillRect(hourXPos, hourYPos, hourBoxWidth, hourBoxHeight, GxEPD_WHITE);
+  epdDisplay.setCursor(hourXPos, hourYPos + hourYOffset);
+
+  epdDisplay.print(sHour);
+
+  epdDisplay.updateWindow(hourXPos, hourYPos, hourBoxWidth, hourBoxHeight, true);           
+}
+
 void epdPrintDate(tm *pTimeInfo)
 {
   //TODO: If month name is short, apply an offset
