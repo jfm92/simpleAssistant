@@ -25,7 +25,7 @@ void initEPD()
     epdDisplay.setRotation(displayRotation);
 }
 
-void epdPrintHour(tm *pTimeInfo)
+void printHourEPD(tm *pTimeInfo)
 {
   // Give format to hour
   String sHour = (pTimeInfo->tm_hour < 10) ?
@@ -46,7 +46,7 @@ void epdPrintHour(tm *pTimeInfo)
   epdDisplay.updateWindow(hourXPos, hourYPos, hourBoxWidth, hourBoxHeight, true);           
 }
 
-void epdPrintDate(tm *pTimeInfo)
+void printDateEPD(tm *pTimeInfo)
 {
   //TODO: If month name is short, apply an offset
   String sDate = String(pTimeInfo->tm_mday) + 
