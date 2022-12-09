@@ -4,19 +4,18 @@
 #include <GxIO/GxIO_SPI/GxIO_SPI.h>
 #include <GxIO/GxIO.h>
 
-// Configs & helpers files
-#include "configHW.h"
+// Fonts
+#include "../../Fonts/FreeSansBold30pt7b.h"
+#include "../../Fonts/FreeSansBold20pt7b.h"
+#include "../../Fonts/FreeSansBold36pt7b.h"
+#include "../../Fonts/FreeSans11pt7b.h"
+#include "../../Fonts/FreeSansBold9pt7b.h"
+
+// Icons & display image layout
+#include "../../Icons/weatherIcons.h"
 #include "displayLayout.h"
 
-// Fonts
-#include "Fonts/FreeSansBold30pt7b.h"
-#include "Fonts/FreeSansBold20pt7b.h"
-#include "Fonts/FreeSansBold36pt7b.h"
-#include "Fonts/FreeSans11pt7b.h"
-#include "Fonts/FreeSansBold9pt7b.h"
-
-// Icons
-#include "Icons/weatherIcons.h"
+#include "EPDDisplay.h"
 
 GxIO_Class epdIO(SPI, pinCS, pinDC, pinRST);
 GxEPD_Class epdDisplay(epdIO, pinRST, pinBusy);
@@ -87,6 +86,34 @@ void loadingScreenEPD(bool configServer, String IP)
     epdDisplay.updateWindow(hourXPos, hourYPos, hourBoxWidth, hourBoxHeight, true);
 }
 
+void getWeatherIcon(unsigned char *ucBuffer, uint8_t weatherCode)
+{
+    // This array assign an icon from our library to the Accuweather API icon code
+    // Due to the API has 44 different icons, we reuse some icons images to reduce 
+    // memory ussage.
+    // https://developer.accuweather.com/weather-icons
+    uint8_t iconPos[44] = {0, // Number 0 not use
+                        sunIcon, sunIcon, sunCloudIcon, sunIcon, // 1 - 4
+                        sunFogIcon, sunCloudIcon, cloudyIcon, cloudyIcon, // 5 - 8
+                        0, 0, // 9, 10 not use on AW API
+                        fogIcon, //11
+                        rainIcon, rainSunIcon, rainSunIcon, rainStormIcon, // 12 - 15
+                        rainStormSunIcon, rainStormSunIcon, rainStormIcon, // 16 - 18
+                        snowIcon, snowIcon, snowIcon,  snowIcon, // 19 - 23
+                        snowIcon, snowIcon, snowIcon, // 24 - 25
+                        0, 0, 
+                        rainIcon, // 29
+                        sunIcon, sunIcon, windyIcon, moonIcon, //30 - 33
+                        moonIcon, moonIcon, moonCloudIcon, moonCloudIcon, moonCloudIcon, //34 - 38
+                        rainIcon, rainIcon, rainStormIcon, rainStormIcon, //39 - 42
+                        snowIcon, snowIcon}; // 43 - 44
+
+    //All weather icons are on the same array, so we need to calculate the offset of each icon.
+    uint16_t offset = iconSize * iconPos[weatherCode];
+
+    memcpy(ucBuffer, &weatherIcons[offset], iconSize);
+}
+
 void printWeatherInfoEPD(weatherStruct *WeatherData)
 {
     // Create weather info
@@ -117,32 +144,4 @@ void printWeatherInfoEPD(weatherStruct *WeatherData)
 
     //TODO: Fix this not hardcode it
     epdDisplay.updateWindow(weatherXPos, weatherXPos, 150, 150, true);
-}
-
-void getWeatherIcon(unsigned char *ucBuffer, uint8_t weatherCode)
-{
-    // This array assign an icon from our library to the Accuweather API icon code
-    // Due to the API has 44 different icons, we reuse some icons images to reduce 
-    // memory ussage.
-    // https://developer.accuweather.com/weather-icons
-    uint8_t iconPos[44] = {0, // Number 0 not use
-                        sunIcon, sunIcon, sunCloudIcon, sunIcon, // 1 - 4
-                        sunFogIcon, sunCloudIcon, cloudyIcon, cloudyIcon, // 5 - 8
-                        0, 0, // 9, 10 not use on AW API
-                        fogIcon, //11
-                        rainIcon, rainSunIcon, rainSunIcon, rainStormIcon, // 12 - 15
-                        rainStormSunIcon, rainStormSunIcon, rainStormIcon, // 16 - 18
-                        snowIcon, snowIcon, snowIcon,  snowIcon, // 19 - 23
-                        snowIcon, snowIcon, snowIcon, // 24 - 25
-                        0, 0, 
-                        rainIcon, // 29
-                        sunIcon, sunIcon, windyIcon, moonIcon, //30 - 33
-                        moonIcon, moonIcon, moonCloudIcon, moonCloudIcon, moonCloudIcon, //34 - 38
-                        rainIcon, rainIcon, rainStormIcon, rainStormIcon, //39 - 42
-                        snowIcon, snowIcon}; // 43 - 44
-
-    //All weather icons are on the same array, so we need to calculate the offset of each icon.
-    uint16_t offset = iconSize * iconPos[weatherCode];
-
-    memcpy(ucBuffer, &weatherIcons[offset], iconSize);
 }
