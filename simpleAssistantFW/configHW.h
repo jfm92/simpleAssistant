@@ -8,3 +8,8 @@
 #define displayVertical 1
 #define displayHorizontal 0
 #define displayRotation displayHorizontal
+
+// EEPROM config
+#define EEPROM_TOTAL_SIZE 0x28 //40Bytes
+#define API_KEY_SIZE 0x20
+#define LOCATION_CODE_SIZE 0x07
