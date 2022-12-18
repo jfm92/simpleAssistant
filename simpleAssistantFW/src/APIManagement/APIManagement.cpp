@@ -1,13 +1,14 @@
 #include <WiFiClientSecure.h>
 #include <ArduinoJson.h>
 
+#include "../EEPROMManagement/EEPROMManagement.h"
 #include "APIManagement.h"
 
 WiFiClientSecure httpClient;
 
-String buildAPIReq(String apiKey, String locationCode)
+String buildACAPIReq(String apiKey, String locationCode)
 {
-    String aux = "GET /currentconditions/v1/" + locationCode + "apikey=" + apiKey + "&details=true HTTP/1.1 \r\n";
+    String aux = "GET /currentconditions/v1/" + locationCode + "?apikey=" + apiKey + "&details=true HTTP/1.1 \r\n";
     aux += "Accept: */*\r\n";
     aux += "Accept-Language: es-ES\r\n";
     aux += "Host: " AccuWeatherHost "\r\n";
@@ -34,8 +35,9 @@ bool getCurrentWeather(weatherStruct *WeatherData)
   yield(); //Give some time for the connection
 
   // Build API request
-  //TODO: Add API request code and location code
-  const char * apiRequest = buildAPIReq("", "").c_str();
+  String apiKEY = readEEPROM(API_KEY_TYPE);
+  String acLocation = readEEPROM(LOCATION_CODE_TYPE);
+  const char * apiRequest = buildACAPIReq(apiKEY, acLocation).c_str();
 
   // Send HTTP request
   httpClient.print(apiRequest);
@@ -53,8 +55,8 @@ bool getCurrentWeather(weatherStruct *WeatherData)
   httpClient.readBytesUntil('\r', reqStatus, sizeof(reqStatus));
   if(strcmp(reqStatus, "HTTP/1.1 200 OK") != 0)
   {
-    Serial.println("HTTP response error.");
     Serial.println(reqStatus);
+    Serial.println("HTTP response error.");
     getDataRequest = false;
     return getDataRequest;
   }
