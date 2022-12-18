@@ -1,8 +1,9 @@
 #ifndef EEPROMANAGMENT
 #define EEPROMANAGMENT
 
-#define API_KEY_TYPE 0x00
-#define LOCATION_CODE_TYPE 0x01
+#define API_KEY_TYPE        0x00
+#define LOCATION_CODE_TYPE  0x01
+#define TIMEZONE_TYPE       0x02
 
 #include "stdio.h"
 #include "stdint.h"
