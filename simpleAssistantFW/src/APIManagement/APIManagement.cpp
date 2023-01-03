@@ -18,7 +18,7 @@ String buildACAPIReq(String apiKey, String locationCode)
     return aux;
 }
 
-bool getCurrentWeather(weatherStruct *WeatherData)
+bool getCurrentWeather(WeatherData_t *WeatherData)
 {
   bool getDataRequest = true;
 
@@ -41,6 +41,7 @@ bool getCurrentWeather(weatherStruct *WeatherData)
 
   // Send HTTP request
   httpClient.print(apiRequest);
+  Serial.println(apiRequest);
 
   // Check client request
   if(httpClient.println() == 0)

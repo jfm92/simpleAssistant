@@ -6,7 +6,7 @@
 
 #define AccuWeatherHost "dataservice.accuweather.com"
 
-bool getCurrentWeather(weatherStruct *WeatherData);
+bool getCurrentWeather(WeatherData_t *WeatherData);
 
 #endif
 

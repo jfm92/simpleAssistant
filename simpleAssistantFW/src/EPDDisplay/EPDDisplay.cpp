@@ -114,7 +114,7 @@ void getWeatherIcon(unsigned char *ucBuffer, uint8_t weatherCode)
     memcpy(ucBuffer, &weatherIcons[offset], iconSize);
 }
 
-void printWeatherInfoEPD(weatherStruct *WeatherData)
+void printWeatherInfoEPD(WeatherData_t *WeatherData)
 {
     // Create weather info
     String sTemp = String((int)round(WeatherData->fTemperature)) + String("C");

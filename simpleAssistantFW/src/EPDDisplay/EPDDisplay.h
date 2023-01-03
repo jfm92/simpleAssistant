@@ -24,6 +24,6 @@ void initEPD();
 void printHourEPD(tm *pTimeInfo);
 void printDateEPD(tm *pTimeInfo);
 void loadingScreenEPD(bool configServer, String IP);
-void printWeatherInfoEPD(weatherStruct *WeatherData);
+void printWeatherInfoEPD(WeatherData_t *WeatherData);
 
 #endif
