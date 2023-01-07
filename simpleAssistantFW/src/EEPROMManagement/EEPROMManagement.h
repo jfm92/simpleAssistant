@@ -15,5 +15,7 @@
 bool initEEPROM();
 void writeEEPROM(String data, uint8_t dataType);
 String readEEPROM(uint8_t dataType);
+void configStateSaveEEPROM(bool state);
+bool configStateReadEEPROM();
 
 #endif

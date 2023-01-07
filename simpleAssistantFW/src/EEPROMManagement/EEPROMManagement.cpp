@@ -4,14 +4,30 @@
 EEPROMClass  API_KEY("eeprom0", 0xFF);
 EEPROMClass  LOCATION("eeprom1", 0xFF);
 EEPROMClass  TIMEZONE("eeprom2", 0xFF);
+EEPROMClass  SET_CONFIG("eeprom3", 0x01);
 
 bool initEEPROM()
 {
     bool API_INIT = API_KEY.begin(API_KEY.length());
     bool LOCATION_INIT = LOCATION.begin(LOCATION.length());
     bool TIMEZONE_INIT = TIMEZONE.begin(TIMEZONE.length());
+    bool SET_CONFIG_INIT = SET_CONFIG.begin(SET_CONFIG.length());
 
-    return API_INIT && LOCATION_INIT && TIMEZONE_INIT;
+    return API_INIT && LOCATION_INIT && TIMEZONE_INIT && SET_CONFIG_INIT;
+}
+
+void configStateSaveEEPROM(bool state)
+{
+    SET_CONFIG.writeBool(0, state);
+    SET_CONFIG.commit();
+}
+
+bool configStateReadEEPROM()
+{
+    bool configSet = false;
+    SET_CONFIG.get(0, configSet);
+
+    return configSet;
 }
 
 void writeEEPROM(String data, uint8_t dataType)
