@@ -6,6 +6,7 @@
 #include "../../helpers.h"
 #include "stdio.h"
 #include "stdbool.h"
+#include "RTClib.h"
 
 const String monthName[12]  = {"January" , 
                                 "February", 
@@ -21,9 +22,10 @@ const String monthName[12]  = {"January" ,
                                 "December"};
 
 void initEPD();
-void printHourEPD(tm *pTimeInfo);
-void printDateEPD(tm *pTimeInfo);
+void printHourEPD(DateTime *dateInfo);
+void printDateEPD(DateTime *dateInfo);
 void loadingScreenEPD(bool configServer, String IP);
 void printWeatherInfoEPD(WeatherData_t *WeatherData);
+void cleanEPD();
 
 #endif

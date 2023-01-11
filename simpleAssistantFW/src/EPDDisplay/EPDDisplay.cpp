@@ -26,16 +26,16 @@ void initEPD()
     epdDisplay.setRotation(displayRotation);
 }
 
-void printHourEPD(tm *pTimeInfo)
+void printHourEPD(DateTime *dateInfo)
 {
   // Give format to hour
-  String sHour = (pTimeInfo->tm_hour < 10) ?
-                  (String("0") + String(pTimeInfo->tm_hour)) :
-                  String(pTimeInfo->tm_hour);
+  String sHour = (dateInfo->hour() < 10) ?
+                  (String("0") + String(dateInfo->hour())) :
+                  String(dateInfo->hour());
   sHour += String(":");
-  sHour += (pTimeInfo->tm_min < 10) ? 
-            (String("0") + String(pTimeInfo->tm_min)) :
-            String(pTimeInfo->tm_min);
+  sHour += (dateInfo->minute() < 10) ? 
+            (String("0") + String(dateInfo->minute())) :
+            String(dateInfo->minute());
 
   epdDisplay.setTextColor(GxEPD_BLACK);
   epdDisplay.setFont(&FreeSansBold36pt7b);
@@ -47,21 +47,21 @@ void printHourEPD(tm *pTimeInfo)
   epdDisplay.updateWindow(hourXPos, hourYPos, hourBoxWidth, hourBoxHeight, true);           
 }
 
-void printDateEPD(tm *pTimeInfo)
+void printDateEPD(DateTime *dateInfo)
 {
     //TODO: If month name is short, apply an offset
-    String sDate = String(pTimeInfo->tm_mday) + 
+    String sDate = String(dateInfo->day()) + 
                 String(" ") +
-                String(monthName[pTimeInfo->tm_mon]) + 
+                String(monthName[dateInfo->month()]) + 
                 String(" ") +
-                String(1900 + pTimeInfo->tm_year);
+                String(dateInfo->year());
 
     epdDisplay.setTextColor(GxEPD_WHITE);
     epdDisplay.setFont(&FreeSans11pt7b);
     epdDisplay.fillRect(dateXPos, dateYPos, dateBoxWidth, dateBoxHeight, GxEPD_BLACK);
 
     //Apply offset if number has only one digit
-    (pTimeInfo->tm_mday < 9 ) ?
+    (dateInfo->day() < 9 ) ?
     epdDisplay.setCursor(dateXPos + dateXOffset , dateYPos + dateYOffset) :
     epdDisplay.setCursor(dateXPos, dateYPos + dateYOffset);
 
@@ -144,4 +144,10 @@ void printWeatherInfoEPD(WeatherData_t *WeatherData)
 
     //TODO: Fix this not hardcode it
     epdDisplay.updateWindow(weatherXPos, weatherXPos, 150, 150, true);
+}
+
+void cleanEPD()
+{
+    epdDisplay.update();
+    epdDisplay.fillScreen(GxEPD_WHITE);
 }
