@@ -32,6 +32,10 @@ String onEvent(AutoConnectAux& aux, PageArgument& args)
     writeEEPROM(onLocation.value.c_str(), LOCATION_CODE_TYPE);
     writeEEPROM(onAPiKey.value.c_str(), API_KEY_TYPE);
     writeEEPROM(onTimeZone.value().c_str(), TIMEZONE_TYPE);
+    
+    configStateSaveEEPROM(true);
+
+    ESP.restart();
 
     return "";
 }
