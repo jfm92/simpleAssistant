@@ -23,9 +23,9 @@ uint8_t wakeUpCause()
 
     esp_sleep_wakeup_cause_t wakeupReason;
     wakeupReason = esp_sleep_get_wakeup_cause();
-
-    wuCause = (wuCause == ESP_SLEEP_WAKEUP_TIMER) ? WAKE_UP_TIMER : wuCause;
-    wuCause = (wuCause == ESP_SLEEP_WAKEUP_EXT0) ? WAKE_UP_BTN : wuCause;
+    
+    wuCause = (wakeupReason == ESP_SLEEP_WAKEUP_TIMER) ? WAKE_UP_TIMER : wuCause;
+    wuCause = (wakeupReason == ESP_SLEEP_WAKEUP_EXT0) ? WAKE_UP_BTN : wuCause;
 
     return wuCause;
 }
