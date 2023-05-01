@@ -1,0 +1,3 @@
+[submodule "simpleAssistantFW/scripts"]
+	path = simpleAssistantFW/scripts
+	url = https://github.com/jfm92/HTML-CSS-JS-convert-to-ESP32
